@@ -1,0 +1,110 @@
+"""
+Created on Wed Oct 19 23:04:38 2022
+
+@author: Ju and Ziyin
+"""
+
+
+def DecimalToBinary(num, len):
+ """
+ Converting decimal to binary, removing the
+ prefix(0b), and adding zeroes to the left,
+ in order to obtain a string with length len.
+ param num - The number to convert ; must be an integer
+ param len - The total length desired in the result ;
+ must be an integer
+ returns A string with len characters corresponding to the
+ binary conversion of num
+ """
+ converse = bin(num).replace("0b","")
+ return converse.zfill(len)
+
+
+def validateLine (nLins, nCols, lineCount, infoMoves):
+    result = []
+   
+    if len(infoMoves) != nCols:
+        result.append("Number of elements given doesn't match initial choice!")
+        return result;
+    
+    else:
+        
+        for element in infoMoves:
+            
+            colCounter= 0;
+            intInfo = int(infoMoves[colCounter])
+            
+            if intInfo > 15 or intInfo < 1: #Check if number is withing the accepted range of the program
+                result.append("Position " + colCounter+1 + "(" + infoMoves[colCounter] + ") must be integer between 1 and 15!")
+            
+            if lineCount == 1: #Check the first line, all numbers must respect the north border
+                firstLineTempNumber = DecimalToBinary(intInfo, 4)
+                if int(firstLineTempNumber[1]) == 1:
+                    result.append("Position " + str(colCounter+1) + " (" + str(infoMoves[colCounter]) + ") must respect North border!")
+            
+            if lineCount == nLins:
+                lastLineTempNumber = DecimalToBinary(intInfo, 4)
+                if int(lastLineTempNumber[3]) == 1:
+                    result.append("Position " + str(colCounter+1) + " (" + str(infoMoves[colCounter]) + ") must respect South border!")
+            
+            if colCounter == 0:
+                colFirstTempNumber = DecimalToBinary(intInfo, 4)
+                if int (colFirstTempNumber[0]) == 1:
+                    result.append("Position " + str(colCounter+1) + " (" + str(infoMoves[colCounter]) + ") must respect West border!")
+                    
+            if colCounter == nCols:
+                colLastTempNumber = DecimalToBinary(intInfo, 4)
+                if int (colLastTempNumber[2]) == 1:
+                    result.append("Position " + str(colCounter+1) + " (" + str(infoMoves[colCounter]) + ") must respect East border!")
+            
+        colCounter = colCounter + 1;
+                    
+        return result;
+        
+
+            
+
+def checkPercent (list):
+ """
+ Runs through the list of lists and adds a counter for each time
+ the number 15 (the only one that allows movement in all directions)
+ is identified. Then it calculates the percent of it in relation to 
+ the total number of values that exist in the list of lists.
+ 
+ """
+ numCounter = 0
+ for line in (list):
+        for column in line:
+            if int(column) == 15:
+                numCounter = numCounter + 1
+ result = (numCounter*100)/(len(list)*len(list[0])) #assuming we always have at least 1 line for the exercise to work
+ return result
+
+
+#Obtains numbers from the user input
+nLins = int(input("How many lines? "))
+nCols = int(input("How many columns? "))
+#creates list, that will be the grid used in the exercise  
+#this will be a list of lists as each element (line) will contain several other ones (the column values)
+grid = []
+
+print ("Insert movement information by line, separated by spaces: ")
+
+lineCount = 0
+
+while lineCount < nLins:
+    print ("Line ", lineCount +1, "?")
+    tempLine = (input())
+    tempList = tempLine.split()
+    
+    if len(validateLine(nLins, nCols, lineCount, tempList)) > 0:
+        listErrors=validateLine(nLins, nCols, lineCount, tempList)
+        for x in range(len(listErrors)):
+               print (listErrors[x])
+        print ("Insert line ", lineCount+1, " again?")
+    
+    else: 
+        grid.append(tempList)
+        lineCount = lineCount +1
+
+print (checkPercent(grid), " of the grid positions allow movement in all directions")
